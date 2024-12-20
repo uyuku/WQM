@@ -1,6 +1,7 @@
 fastapi
 gunicorn
 matplotlib
+networkx
 numpy
 scipy
 scikit-fuzzy
