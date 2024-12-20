@@ -1,5 +1,6 @@
 fastapi
 gunicorn
+matplotlib
 numpy
 scikit-fuzzy
 pydantic<2
