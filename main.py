@@ -1,15 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, validator, root_validator
-from typing import Dict, Optional
-from water_quality_model import WaterQualityEvaluator  # Import your class
+from pydantic import BaseModel
+from typing import Optional
+from water_quality_model import WaterQualityEvaluator
 
-app = FastAPI(
-    title="Water Quality API",
-    description="API to evaluate water quality based on various parameters.",
-    version="1.0.0",
-)
-
+app = FastAPI()
 quality_model = WaterQualityEvaluator()
 
 
@@ -118,10 +113,12 @@ async def evaluate_water_quality(data: WaterQualityData):
         "graph": parameter_contributions,
     }
 
+
 @app.get("/")
 @app.get("/index.html")
 async def read_index():
     return FileResponse("client/dist/index.html")
+
 
 @app.get("/assets/index.js")
 async def read_js():

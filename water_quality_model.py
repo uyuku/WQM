@@ -850,7 +850,7 @@ class WaterQualityEvaluator:
                 param_comment = "No specific comment available for this parameter."
 
             report += (
-                f"  {parameter}:\n"
+                f"\n{parameter}:\n"
                 f"    Measured Value: {value} {unit}\n"
                 f"    Quality Rating (Qi): {qi:.2f} (out of 100)\n"
                 f"    Weighted Qi: {weighted_qi:.2f}\n"
