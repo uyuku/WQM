@@ -33,128 +33,23 @@ class WaterQualityEvaluator:
             "Iron": 0.03
         }
 
-        # Default quality ratings and units
+        # Adjusted quality ratings for better logic
         self.default_quality_ratings = {
-            "Temperature": {
-                "ideal": 20,
-                "good_low": 15,
-                "good_high": 25,
-                "poor_low": 0,  # Adjusted to allow evaluation
-                "poor_high": 40, # Adjusted to allow evaluation
-                "unit": "°C"
-            },
-            "pH": {  # Using linear interpolation now
-                "ideal": 7,
-                "good_low": 6.5,
-                "good_high": 8.5,
-                "poor_low": 0,   # Adjusted to allow evaluation
-                "poor_high": 14,  # Adjusted to allow evaluation
-                "unit": ""
-            },
-            "Turbidity": {
-                "ideal": 0,
-                "good_low": 0,
-                "good_high": 5,
-                "poor_low": 0,
-                "poor_high": 100, # Adjusted to allow evaluation
-                "unit": "NTU"
-            },
-            "Dissolved Oxygen": {  # Using linear interpolation now
-                "ideal": 9,
-                "good_low": 7,
-                "good_high": 11,
-                "poor_low": 0,   # Adjusted to allow evaluation
-                "poor_high": 15,  # Adjusted to allow evaluation
-                "unit": "mg/L"
-            },
-            "Conductivity": {
-                "ideal": 200,
-                "good_low": 100,
-                "good_high": 500,
-                "poor_low": 0,      # Adjusted to allow evaluation
-                "poor_high": 2000,  # Adjusted to allow evaluation
-                "unit": "µS/cm"
-            },
-            "Total Dissolved Solids": {
-                "ideal": 100,
-                "good_low": 50,
-                "good_high": 500,
-                "poor_low": 0,      # Adjusted to allow evaluation
-                "poor_high": 1500, # Adjusted to allow evaluation
-                "unit": "mg/L"
-            },
-            "Nitrate": {
-                "ideal": 1,
-                "good_low": 0,
-                "good_high": 5,
-                "poor_low": 0,
-                "poor_high": 20,  # Adjusted to allow evaluation
-                "unit": "mg/L"
-            },
-            "Phosphate": {
-                "ideal": 0.02,
-                "good_low": 0,
-                "good_high": 0.1,
-                "poor_low": 0,
-                "poor_high": 1.0,  # Adjusted to allow evaluation
-                "unit": "mg/L"
-            },
-            "Total Coliforms": {
-                "ideal": 0,
-                "good_low": 0,
-                "good_high": 10,
-                "poor_low": 0,
-                "poor_high": 1000, # Adjusted to allow evaluation
-                "unit": "CFU/100mL"
-            },
-            "E. coli": {
-                "ideal": 0,
-                "good_low": 0,
-                "good_high": 1,
-                "poor_low": 0,
-                "poor_high": 100, # Adjusted to allow evaluation
-                "unit": "CFU/100mL"
-            },
-            "BOD": {
-                "ideal": 0,
-                "good_low": 0,
-                "good_high": 3,
-                "poor_low": 0,
-                "poor_high": 20,  # Adjusted to allow evaluation
-                "unit": "mg/L"
-            },
-            "COD": {
-                "ideal": 0,
-                "good_low": 0,
-                "good_high": 5,
-                "poor_low": 0,
-                "poor_high": 50,  # Adjusted to allow evaluation
-                "unit": "mg/L"
-            },
-            "Hardness": {
-                "ideal": 75,
-                "good_low": 60,
-                "good_high": 180,
-                "poor_low": 0,
-                "poor_high": 800, # Adjusted to allow evaluation
-                "unit": "mg/L"  # as CaCO3
-            },
-            "Alkalinity": {
-                "ideal": 100,
-                "good_low": 20,
-                "good_high": 200,
-                "poor_low": 0,
-                "poor_high": 1000, # Adjusted to allow evaluation
-                "unit": "mg/L" # as CaCO3
-            },
-            "Iron": {
-                "ideal": 0.0,
-                "good_low": 0,
-                "good_high": 0.3,
-                "poor_low": 0,
-                "poor_high": 5.0,  # Adjusted to allow evaluation
-                "unit": "mg/L"
-            }
+            "Temperature": {"ideal": 20, "good_low": 15, "good_high": 25, "poor_low": 0, "poor_high": 40, "unit": "°C"},
+            "pH": {"ideal": 7, "good_low": 6.5, "good_high": 8.5, "poor_low": 0, "poor_high": 14, "unit": ""},
+            "Turbidity": {"ideal": 0, "good_low": 0, "good_high": 5, "poor_low": 0, "poor_high": 8, "unit": "NTU"},
+            "Dissolved Oxygen": {"ideal": 9, "good_low": 7, "good_high": 11, "poor_low": 0, "poor_high": 15, "unit": "mg/L"},
+            "Conductivity": {"ideal": 0, "good_low": 0, "good_high": 500, "poor_low": 0, "poor_high": 2000, "unit": "µS/cm"},
+            "Total Dissolved Solids": {"ideal": 0, "good_low": 0, "good_high": 500, "poor_low": 0, "poor_high": 1500, "unit": "mg/L"},
+            "Nitrate": {"ideal": 0, "good_low": 0, "good_high": 5, "poor_low": 0, "poor_high": 20, "unit": "mg/L"},
+            "Phosphate": {"ideal": 0, "good_low": 0, "good_high": 0.1, "poor_low": 0, "poor_high": 1.0, "unit": "mg/L"},
+            "Total Coliforms": {"ideal": 0, "good_low": 0, "good_high": 10, "poor_low": 0, "poor_high": 1000, "unit": "CFU/100mL"},
+            "E. coli": {"ideal": 0, "good_low": 0, "good_high": 1, "poor_low": 0, "poor_high": 100, "unit": "CFU/100mL"},
+            "BOD": {"ideal": 0, "good_low": 0, "good_high": 3, "poor_low": 0, "poor_high": 20, "unit": "mg/L"},
+            "COD": {"ideal": 0, "good_low": 0, "good_high": 5, "poor_low": 0, "poor_high": 50, "unit": "mg/L"},
+            "Hardness": {"ideal": 75, "good_low": 60, "good_high": 180, "poor_low": 0, "poor_high": 800, "unit": "mg/L"},
+            "Alkalinity": {"ideal": 100, "good_low": 20, "good_high": 200, "poor_low": 0, "poor_high": 1000, "unit": "mg/L"},
+            "Iron": {"ideal": 0, "good_low": 0, "good_high": 0.3, "poor_low": 0, "poor_high": 5.0, "unit": "mg/L"}
         }
 
         self.weights = weights if weights is not None else self.default_weights
@@ -165,40 +60,38 @@ class WaterQualityEvaluator:
 
     def calculate_quality_rating(self, parameter, value):
         """
-        Calculates the quality rating (Qi) for a parameter using appropriate logic.
-        Now focuses on "how good" the quality is.
+        Calculates the quality rating (Qi) for a parameter.
         """
         rating = self.quality_ratings[parameter]
         ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"],
-            rating["good_low"],
-            rating["good_high"],
-            rating["poor_low"],
-            rating["poor_high"],
+            rating["ideal"], rating["good_low"], rating["good_high"], rating["poor_low"], rating["poor_high"]
         )
 
-        # Ensure the value falls within the defined evaluation range
-        if not (poor_low <= value <= poor_high):
-            # Still provide a rating, even if outside the typical "poor" range
-            if value < poor_low:
-                # Extrapolate linearly below the poor range
-                return max(0, 50 - ((poor_low - value) / (good_low - poor_low if good_low > poor_low else 1)) * 50)
-            else:  # value > poor_high
-                # Extrapolate linearly above the poor range
-                return min(100, 50 - ((value - poor_high) / (poor_high - good_high if poor_high > good_high else 1)) * 50)
-
-        if good_low <= value <= good_high:
-            # Within good range
+        if parameter in ["Turbidity", "Total Coliforms", "E. coli", "BOD", "COD", "Iron", "Phosphate", "Nitrate", "Conductivity", "Total Dissolved Solids"]:
+            # Lower is better
             if value <= ideal:
-                qi = 50 + ((value - good_low) / (ideal - good_low if ideal > good_low else 1)) * 50
+                qi = 100
+            elif ideal < value <= good_high:
+                qi = 100 - (value - ideal) / (good_high - ideal) * 50
+            elif good_high < value <= poor_high:
+                qi = 50 - (value - good_high) / (poor_high - good_high) * 50
             else:
-                qi = 50 + ((good_high - value) / (good_high - ideal if good_high > ideal else 1)) * 50
-        elif value < good_low:
-            # Below good range
-            qi = (value - poor_low) / (good_low - poor_low if good_low > poor_low else 1) * 50
+                qi = 0 # Value outside the defined range
+        elif parameter in ["pH", "Dissolved Oxygen", "Temperature", "Hardness", "Alkalinity"]:
+            # Range is best
+            if good_low <= value <= good_high:
+                if value <= ideal:
+                    qi = 50 + (value - good_low) / (ideal - good_low if ideal > good_low else 1) * 50
+                else:
+                    qi = 50 + (good_high - value) / (good_high - ideal if good_high > ideal else 1) * 50
+            elif poor_low <= value < good_low:
+                qi = (value - poor_low) / (good_low - poor_low if good_low > poor_low else 1) * 50
+            elif good_high < value <= poor_high:
+                qi = (poor_high - value) / (poor_high - good_high if poor_high > good_high else 1) * 50
+            else:
+                qi = 0 # Value outside the defined range
         else:
-            # Above good range
-            qi = (poor_high - value) / (poor_high - good_high if poor_high > good_high else 1) * 50
+            return 0  # Unknown parameter
 
         return max(0, min(qi, 100))
 
@@ -290,121 +183,139 @@ class WaterQualityEvaluator:
                 if value < 6.5:
                     param_comment = "pH is acidic, which can be corrosive and may affect aquatic life."
                 elif 6.5 <= value <= 8.5:
-                    param_comment = "pH is within the optimal range, suitable for most aquatic life and uses."
+                    param_comment = "pH is optimal, well-suited for most aquatic life and uses."
                 elif value > 8.5:
                     param_comment = "pH is alkaline, which can be unpleasant to taste and may affect aquatic life."
 
             elif parameter == "Dissolved Oxygen":
                 if value < 5:
-                    param_comment = "Dissolved oxygen levels are low, potentially stressing aquatic life."
+                    param_comment = "Dissolved oxygen levels are critically low, severely stressing aquatic life."
                 elif 5 <= value <= 7:
                     param_comment = "Dissolved oxygen levels are moderate, sufficient for some aquatic life but could be better."
                 elif value > 7:
-                    param_comment = "Dissolved oxygen levels are good, supporting a healthy aquatic ecosystem."
+                    param_comment = "Dissolved oxygen levels are high, indicating a healthy and well-oxygenated aquatic ecosystem."
 
             elif parameter == "Temperature":
                 if value < 15:
-                    param_comment = "Temperature is low, which can slow down biological processes."
+                    param_comment = "Temperature is low, which can slow down biological processes in aquatic ecosystems."
                 elif 15 <= value <= 25:
-                    param_comment = "Temperature is optimal for most aquatic organisms."
+                    param_comment = "Temperature is optimal for a wide range of aquatic organisms."
                 elif value > 25:
                     param_comment = "Temperature is high, which can reduce dissolved oxygen levels and stress aquatic life."
 
             elif parameter == "Turbidity":
-                if value <= 5:
+                if value <= 1:
+                    param_comment = "Turbidity is very low, indicating exceptionally clear water."
+                elif 1 < value <= 5:
                     param_comment = "Turbidity is low, indicating clear water."
                 elif 5 < value <= 50:
-                    param_comment = "Turbidity is moderate, which may impact light penetration."
+                    param_comment = "Turbidity is moderate, which may impact light penetration and visual clarity."
                 elif value > 50:
-                    param_comment = "Turbidity is high, indicating cloudy water with suspended particles."
+                    param_comment = "Turbidity is high, indicating cloudy water with a significant amount of suspended particles."
 
             elif parameter == "Conductivity":
-                if value <= 500:
-                    param_comment = "Conductivity is within a normal range for freshwater."
+                if value <= 100:
+                    param_comment = "Conductivity is very low, indicating very pure water with minimal dissolved substances."
+                elif 100 < value <= 500:
+                    param_comment = "Conductivity is within a normal range for freshwater systems."
                 elif 500 < value <= 1500:
                     param_comment = "Conductivity is elevated, suggesting a higher concentration of dissolved substances."
                 elif value > 1500:
                     param_comment = "Conductivity is very high, which can be detrimental to aquatic life and indicates significant dissolved solids."
 
             elif parameter == "Total Dissolved Solids":
-                if value <= 500:
+                if value <= 100:
+                    param_comment = "TDS levels are very low, indicating high purity."
+                elif 100 < value <= 500:
                     param_comment = "TDS levels are acceptable for drinking water."
                 elif 500 < value <= 1000:
-                    param_comment = "TDS levels are moderately high and may affect taste."
+                    param_comment = "TDS levels are moderately high and may affect taste or be noticeable."
                 elif value > 1000:
                     param_comment = "TDS levels are high, potentially making the water unpalatable or unsuitable for certain uses."
 
             elif parameter == "Nitrate":
-                if value <= 5:
+                if value <= 1:
+                    param_comment = "Nitrate levels are very low and well within safe limits."
+                elif 1 < value <= 5:
                     param_comment = "Nitrate levels are within acceptable limits."
                 elif 5 < value <= 10:
-                    param_comment = "Nitrate levels are elevated and could contribute to eutrophication."
+                    param_comment = "Nitrate levels are elevated and could contribute to eutrophication in sensitive waters."
                 elif value > 10:
-                    param_comment = "Nitrate levels are high, posing a risk of eutrophication and potential health concerns."
+                    param_comment = "Nitrate levels are high, posing a significant risk of eutrophication and potential health concerns."
 
             elif parameter == "Phosphate":
-                if value <= 0.1:
+                if value <= 0.02:
+                    param_comment = "Phosphate levels are very low and well within acceptable limits."
+                elif 0.02 < value <= 0.1:
                     param_comment = "Phosphate levels are within acceptable limits."
                 elif 0.1 < value <= 0.5:
                     param_comment = "Phosphate levels are elevated and could contribute to algal blooms."
                 elif value > 0.5:
-                    param_comment = "Phosphate levels are high, significantly increasing the risk of algal blooms."
+                    param_comment = "Phosphate levels are high, significantly increasing the risk of nuisance algal blooms."
 
             elif parameter == "Total Coliforms":
                 if value == 0:
-                    param_comment = "Total coliforms are not detected, indicating good sanitary quality."
+                    param_comment = "Total coliforms are not detected, indicating excellent sanitary quality."
                 elif 0 < value <= 10:
-                    param_comment = "Low levels of total coliforms detected, suggesting a potential for contamination."
+                    param_comment = "Low levels of total coliforms detected, suggesting a potential for minor contamination."
                 elif value > 10:
-                    param_comment = "High levels of total coliforms, indicating likely fecal contamination."
+                    param_comment = "High levels of total coliforms, indicating likely fecal contamination and the need for further investigation."
 
             elif parameter == "E. coli":
                 if value == 0:
-                    param_comment = "E. coli is not detected, indicating the water is likely safe from fecal contamination."
+                    param_comment = "E. coli is not detected, indicating the water is likely safe from recent fecal contamination."
                 elif value > 0:
-                    param_comment = "E. coli is detected, indicating fecal contamination and a risk of waterborne illness."
+                    param_comment = "E. coli is detected, indicating fecal contamination and a potential risk of waterborne illness. This requires immediate attention."
 
             elif parameter == "BOD":
-                if value <= 3:
+                if value <= 1:
+                    param_comment = "BOD is very low, indicating excellent water quality with minimal organic pollution."
+                elif 1 < value <= 3:
                     param_comment = "BOD is low, indicating good water quality with minimal organic pollution."
                 elif 3 < value <= 8:
-                    param_comment = "BOD is moderate, suggesting some organic pollution."
+                    param_comment = "BOD is moderate, suggesting some organic pollution that could impact dissolved oxygen levels."
                 elif value > 8:
-                    param_comment = "BOD is high, indicating significant organic pollution that can deplete oxygen."
+                    param_comment = "BOD is high, indicating significant organic pollution and a potential for oxygen depletion."
 
             elif parameter == "COD":
-                if value <= 5:
+                if value <= 1:
+                    param_comment = "COD is very low, indicating very clean water with minimal chemical pollutants."
+                elif 1 < value <= 5:
                     param_comment = "COD is low, indicating minimal chemical pollutants."
                 elif 5 < value <= 20:
-                    param_comment = "COD is moderate, suggesting some chemical pollution."
+                    param_comment = "COD is moderate, suggesting the presence of some chemical pollutants."
                 elif value > 20:
-                    param_comment = "COD is high, indicating significant chemical pollution."
+                    param_comment = "COD is high, indicating significant chemical pollution that may require treatment."
 
             elif parameter == "Hardness":
-                if value <= 75:
-                    param_comment = "Water is soft."
-                elif 75 < value <= 150:
-                    param_comment = "Water is moderately hard."
-                elif 150 < value <= 300:
-                    param_comment = "Water is hard."
-                elif value > 300:
-                    param_comment = "Water is very hard."
+                if value <= 60:
+                    param_comment = "Water is soft, which is generally good but may lack some minerals."
+                elif 60 < value <= 120:
+                    param_comment = "Water is moderately hard, generally considered good for consumption."
+                elif 120 < value <= 180:
+                    param_comment = "Water is hard, which may lead to scale buildup."
+                elif value > 180:
+                    param_comment = "Water is very hard, likely to cause significant scale buildup and may affect soap effectiveness."
 
             elif parameter == "Alkalinity":
                 if value < 20:
                     param_comment = "Alkalinity is low, making the water susceptible to pH changes."
-                elif 20 <= value <= 200:
-                    param_comment = "Alkalinity is within a desirable range, providing good buffering capacity."
+                elif 20 <= value <= 100:
+                    param_comment = "Alkalinity is within the optimal range, providing good buffering capacity."
+                elif 100 < value <= 200:
+                    param_comment = "Alkalinity is slightly elevated but generally acceptable."
                 elif value > 200:
-                    param_comment = "Alkalinity is high, which may be associated with high pH."
+                    param_comment = "Alkalinity is high, which may be associated with high pH and can affect the taste of water."
 
             elif parameter == "Iron":
-                if value <= 0.3:
-                    param_comment = "Iron levels are low, unlikely to cause staining or taste issues."
+                if value <= 0.1:
+                    param_comment = "Iron levels are very low, unlikely to cause any issues."
+                elif 0.1 < value <= 0.3:
+                    param_comment = "Iron levels are low, with a minimal risk of staining or taste issues."
                 elif 0.3 < value <= 1.0:
-                    param_comment = "Iron levels are moderate and may cause staining."
+                    param_comment = "Iron levels are moderate and may cause noticeable staining in plumbing fixtures."
                 elif value > 1.0:
-                    param_comment = "Iron levels are high, likely causing staining and a metallic taste."
+                    param_comment = "Iron levels are high, likely causing significant staining and a metallic taste."
 
             else:
                 param_comment = "No specific comment available for this parameter."
