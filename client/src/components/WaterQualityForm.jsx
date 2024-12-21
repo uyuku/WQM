@@ -16,7 +16,10 @@ const WaterQualityForm = ({ onResult }) => {
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value ? parseFloat(value) : null });
+        setFormData({
+            ...formData,
+            [name]: value === '' ? '' : parseFloat(value),
+        });
     };
 
     const handleSubmit = async (event) => {
@@ -24,7 +27,13 @@ const WaterQualityForm = ({ onResult }) => {
         setLoading(true);
         setError('');
         try {
-            const result = await evaluateWaterQuality(formData);
+            const processedFormData = Object.fromEntries(
+                Object.entries(formData).map(([key, value]) => [
+                    key,
+                    value === '' ? null : value,
+                ])
+            );
+            const result = await evaluateWaterQuality(processedFormData);
             onResult(result);
         } catch (err) {
             setError(err.message);
@@ -65,7 +74,7 @@ const WaterQualityForm = ({ onResult }) => {
                                 label={param.label}
                                 name={param.name}
                                 type={param.type}
-                                value={formData[param.name] || ''}
+                                value={formData[param.name] === 0 ? '0' : formData[param.name] || ''}
                                 onChange={handleChange}
                                 variant="outlined"
                             />
