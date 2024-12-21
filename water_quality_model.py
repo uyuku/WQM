@@ -2,14 +2,12 @@ import io
 import base64
 import numpy as np
 import matplotlib.pyplot as plt
-import skfuzzy as fuzz
-from skfuzzy import control as ctrl
 
 class WaterQualityEvaluator:
     """
-    Evaluates water quality based on various parameters using a combination of
-    linear, piecewise linear, and fuzzy logic methods. Calculates an overall
-    water quality score and generates a detailed report.
+    Evaluates water quality based on various parameters using linear and
+    piecewise linear methods. Calculates an overall water quality score
+    and generates a detailed report.
     """
 
     def __init__(self, weights=None, quality_ratings=None):
@@ -17,7 +15,6 @@ class WaterQualityEvaluator:
         Initializes the WaterQualityEvaluator with optional custom weights and
         quality ratings.
         """
-        # Example Parameters with Fuzzy Logic for pH and Dissolved Oxygen
         self.default_weights = {
             "Temperature": 0.04,
             "pH": 0.10,
@@ -36,54 +33,54 @@ class WaterQualityEvaluator:
             "Iron": 0.03
         }
 
-        # Default quality ratings and units (you can customize these)
+        # Default quality ratings and units
         self.default_quality_ratings = {
             "Temperature": {
                 "ideal": 20,
                 "good_low": 15,
                 "good_high": 25,
-                "poor_low": 5,
-                "poor_high": 35,
+                "poor_low": 0,  # Adjusted to allow evaluation
+                "poor_high": 40, # Adjusted to allow evaluation
                 "unit": "°C"
             },
-            "pH": {  # Fuzzy logic will be used here
+            "pH": {  # Using linear interpolation now
                 "ideal": 7,
                 "good_low": 6.5,
-                "good_high": 8,
-                "poor_low": 4,
-                "poor_high": 10,
-                "unit": ""  # pH is unitless
+                "good_high": 8.5,
+                "poor_low": 0,   # Adjusted to allow evaluation
+                "poor_high": 14,  # Adjusted to allow evaluation
+                "unit": ""
             },
             "Turbidity": {
                 "ideal": 0,
-                "good_low": 1,
+                "good_low": 0,
                 "good_high": 5,
                 "poor_low": 0,
-                "poor_high": 50,
+                "poor_high": 100, # Adjusted to allow evaluation
                 "unit": "NTU"
             },
-            "Dissolved Oxygen": {  # Fuzzy logic will be used here
+            "Dissolved Oxygen": {  # Using linear interpolation now
                 "ideal": 9,
                 "good_low": 7,
                 "good_high": 11,
-                "poor_low": 3,
-                "poor_high": 14,
+                "poor_low": 0,   # Adjusted to allow evaluation
+                "poor_high": 15,  # Adjusted to allow evaluation
                 "unit": "mg/L"
             },
             "Conductivity": {
                 "ideal": 200,
                 "good_low": 100,
-                "good_high": 400,
-                "poor_low": 50,
-                "poor_high": 1000,
+                "good_high": 500,
+                "poor_low": 0,      # Adjusted to allow evaluation
+                "poor_high": 2000,  # Adjusted to allow evaluation
                 "unit": "µS/cm"
             },
             "Total Dissolved Solids": {
                 "ideal": 100,
                 "good_low": 50,
-                "good_high": 300,
-                "poor_low": 0,
-                "poor_high": 500,
+                "good_high": 500,
+                "poor_low": 0,      # Adjusted to allow evaluation
+                "poor_high": 1500, # Adjusted to allow evaluation
                 "unit": "mg/L"
             },
             "Nitrate": {
@@ -91,7 +88,7 @@ class WaterQualityEvaluator:
                 "good_low": 0,
                 "good_high": 5,
                 "poor_low": 0,
-                "poor_high": 10,
+                "poor_high": 20,  # Adjusted to allow evaluation
                 "unit": "mg/L"
             },
             "Phosphate": {
@@ -99,47 +96,47 @@ class WaterQualityEvaluator:
                 "good_low": 0,
                 "good_high": 0.1,
                 "poor_low": 0,
-                "poor_high": 0.3,
+                "poor_high": 1.0,  # Adjusted to allow evaluation
                 "unit": "mg/L"
             },
             "Total Coliforms": {
                 "ideal": 0,
                 "good_low": 0,
-                "good_high": 5,
+                "good_high": 10,
                 "poor_low": 0,
-                "poor_high": 100,
+                "poor_high": 1000, # Adjusted to allow evaluation
                 "unit": "CFU/100mL"
             },
             "E. coli": {
                 "ideal": 0,
-                "good_low": 000.1,
+                "good_low": 0,
                 "good_high": 1,
                 "poor_low": 0,
-                "poor_high": 10,
+                "poor_high": 100, # Adjusted to allow evaluation
                 "unit": "CFU/100mL"
             },
             "BOD": {
                 "ideal": 0,
                 "good_low": 0,
-                "good_high": 2,
+                "good_high": 3,
                 "poor_low": 0,
-                "poor_high": 6,
+                "poor_high": 20,  # Adjusted to allow evaluation
                 "unit": "mg/L"
             },
             "COD": {
                 "ideal": 0,
                 "good_low": 0,
-                "good_high": 4,
+                "good_high": 5,
                 "poor_low": 0,
-                "poor_high": 20,
+                "poor_high": 50,  # Adjusted to allow evaluation
                 "unit": "mg/L"
             },
             "Hardness": {
                 "ideal": 75,
                 "good_low": 60,
-                "good_high": 150,
+                "good_high": 180,
                 "poor_low": 0,
-                "poor_high": 500,
+                "poor_high": 800, # Adjusted to allow evaluation
                 "unit": "mg/L"  # as CaCO3
             },
             "Alkalinity": {
@@ -147,7 +144,7 @@ class WaterQualityEvaluator:
                 "good_low": 20,
                 "good_high": 200,
                 "poor_low": 0,
-                "poor_high": 500,
+                "poor_high": 1000, # Adjusted to allow evaluation
                 "unit": "mg/L" # as CaCO3
             },
             "Iron": {
@@ -155,7 +152,7 @@ class WaterQualityEvaluator:
                 "good_low": 0,
                 "good_high": 0.3,
                 "poor_low": 0,
-                "poor_high": 1.0,
+                "poor_high": 5.0,  # Adjusted to allow evaluation
                 "unit": "mg/L"
             }
         }
@@ -166,511 +163,83 @@ class WaterQualityEvaluator:
         if abs(sum(self.weights.values()) - 1) > 1e-6:
             raise ValueError("The sum of the weights should be equal to 1")
 
-        # Initialize fuzzy logic controllers (only for demonstration)
-        self._initialize_fuzzy_logic()
-
-    def _initialize_fuzzy_logic(self):
-        """
-        Initializes fuzzy logic controllers for pH and Dissolved Oxygen.
-        """
-        # pH fuzzy logic
-        # 1. Define the Antecedent (input)
-        pH = ctrl.Antecedent(np.arange(0, 14, 0.1), 'pH_input')
-
-        # 2. Define membership functions for pH
-        pH['poor'] = fuzz.trapmf(pH.universe, [0, 0, 4, 6.5])
-        pH['good'] = fuzz.gaussmf(pH.universe, 7, 0.5)
-        pH['excellent'] = fuzz.trapmf(pH.universe, [7.5, 8.5, 14, 14])
-
-        # 3. Define the Consequent (output)
-        quality = ctrl.Consequent(np.arange(0, 100, 1), 'pH_quality')
-
-        # 4. Define membership functions for the output quality
-        quality['poor'] = fuzz.trimf(quality.universe, [0, 0, 50])
-        quality['good'] = fuzz.trimf(quality.universe, [0, 50, 100])
-        quality['excellent'] = fuzz.trimf(quality.universe, [50, 100, 100])
-
-        # 5. Now create the control system and add rules
-        self.pH_ctrl = ctrl.ControlSystem()
-        self.pH_ctrl.addrule(ctrl.Rule(pH['poor'], quality['poor']))
-        self.pH_ctrl.addrule(ctrl.Rule(pH['good'], quality['good']))
-        self.pH_ctrl.addrule(ctrl.Rule(pH['excellent'], quality['excellent']))
-
-        # Dissolved Oxygen fuzzy logic (similar structure)
-        # 1. Define the Antecedent (input)
-        do = ctrl.Antecedent(np.arange(0, 20, 0.1), 'do_input')
-
-        # 2. Define membership functions for DO
-        do['poor'] = fuzz.trapmf(do.universe, [0, 0, 3, 7])
-        do['good'] = fuzz.gaussmf(do.universe, 9, 1)
-        do['excellent'] = fuzz.trapmf(do.universe, [11, 14, 20, 20])
-
-        # 3. Define the Consequent (output)
-        do_quality = ctrl.Consequent(np.arange(0, 100, 1), 'do_quality')
-
-        # 4. Define membership functions for the output quality
-        do_quality['poor'] = fuzz.trimf(do_quality.universe, [0, 0, 50])
-        do_quality['good'] = fuzz.trimf(do_quality.universe, [0, 50, 100])
-        do_quality['excellent'] = fuzz.trimf(do_quality.universe, [50, 100, 100])
-
-        # 5. Create the control system and add rules
-        self.do_ctrl = ctrl.ControlSystem()
-        self.do_ctrl.addrule(ctrl.Rule(do['poor'], do_quality['poor']))
-        self.do_ctrl.addrule(ctrl.Rule(do['good'], do_quality['good']))
-        self.do_ctrl.addrule(ctrl.Rule(do['excellent'], do_quality['excellent']))
-
     def calculate_quality_rating(self, parameter, value):
         """
         Calculates the quality rating (Qi) for a parameter using appropriate logic.
         Now focuses on "how good" the quality is.
         """
         rating = self.quality_ratings[parameter]
+        ideal, good_low, good_high, poor_low, poor_high = (
+            rating["ideal"],
+            rating["good_low"],
+            rating["good_high"],
+            rating["poor_low"],
+            rating["poor_high"],
+        )
 
-        if parameter == "pH":
-            return self._calculate_fuzzy_quality_ph(value)
-        elif parameter == "Dissolved Oxygen":
-            return self._calculate_fuzzy_quality_do(value)
-        elif parameter == "Temperature":
-            return self._calculate_quality_rating_temperature(value)
-        elif parameter == "Turbidity":
-            return self._calculate_quality_rating_turbidity(value)
-        elif parameter == "Conductivity":
-            return self._calculate_quality_rating_conductivity(value)
-        elif parameter == "Total Dissolved Solids":
-            return self._calculate_quality_rating_tds(value)
-        elif parameter == "Nitrate":
-            return self._calculate_quality_rating_nitrate(value)
-        elif parameter == "Phosphate":
-            return self._calculate_quality_rating_phosphate(value)
-        elif parameter == "Total Coliforms":
-            return self._calculate_quality_rating_total_coliforms(value)
-        elif parameter == "E. coli":
-            return self._calculate_quality_rating_e_coli(value)
-        elif parameter == "BOD":
-            return self._calculate_quality_rating_bod(value)
-        elif parameter == "COD":
-            return self._calculate_quality_rating_cod(value)
+        # Ensure the value falls within the defined evaluation range
+        if not (poor_low <= value <= poor_high):
+            # Still provide a rating, even if outside the typical "poor" range
+            if value < poor_low:
+                # Extrapolate linearly below the poor range
+                return max(0, 50 - ((poor_low - value) / (good_low - poor_low if good_low > poor_low else 1)) * 50)
+            else:  # value > poor_high
+                # Extrapolate linearly above the poor range
+                return min(100, 50 - ((value - poor_high) / (poor_high - good_high if poor_high > good_high else 1)) * 50)
+
+        if good_low <= value <= good_high:
+            # Within good range
+            if value <= ideal:
+                qi = 50 + ((value - good_low) / (ideal - good_low if ideal > good_low else 1)) * 50
+            else:
+                qi = 50 + ((good_high - value) / (good_high - ideal if good_high > ideal else 1)) * 50
+        elif value < good_low:
+            # Below good range
+            qi = (value - poor_low) / (good_low - poor_low if good_low > poor_low else 1) * 50
         else:
-            # Default: Linear interpolation (you can customize this)
-            ideal, good_low, good_high, poor_low, poor_high = (
-                rating["ideal"],
-                rating["good_low"],
-                rating["good_high"],
-                rating["poor_low"],
-                rating["poor_high"],
-            )
+            # Above good range
+            qi = (poor_high - value) / (poor_high - good_high if poor_high > good_high else 1) * 50
 
-            if not (poor_low <= value <= poor_high):
-                return 0  # Value is outside the defined poor range
-
-            if good_low == good_high:  # Linear interpolation for single good range
-                if value <= ideal:
-                    qi = 100 - ((ideal - value) / (ideal - poor_low)) * (100 - 0)
-                else:
-                    qi = 100 - ((value - ideal) / (poor_high - ideal)) * (100 - 0)
-            else:  # Piecewise linear interpolation
-                if good_low <= value <= good_high:
-                    qi = 100 - ((value - good_low) / (good_high - good_low)) * (100 - 0)
-                elif value < good_low:
-                    qi = 100 - ((good_low - value) / (good_low - poor_low)) * (100 - 0)
-                else:  # value > good_high
-                    qi = 100 - ((value - good_high) / (poor_high - good_high)) * (100 - 0)
-
-            return max(0, min(qi, 100))  # Ensure qi is within 0-100 range
-
-    def _calculate_fuzzy_quality_ph(self, pH_value):
-        """
-        Calculates the quality rating for pH using fuzzy logic.
-        """
-        # Define fuzzy sets and membership functions for pH
-        pH = ctrl.Antecedent(np.arange(0, 14, 0.1), 'pH_input')
-        quality = ctrl.Consequent(np.arange(0, 100, 1), 'pH_quality')
-
-        # Define membership functions
-        pH['poor'] = fuzz.trapmf(pH.universe, [0, 0, 4, 6.5])
-        pH['good'] = fuzz.gaussmf(pH.universe, 7, 0.5)
-        pH['excellent'] = fuzz.trapmf(pH.universe, [7.5, 8.5, 14, 14])
-
-        quality['poor'] = fuzz.trimf(quality.universe, [0, 0, 50])
-        quality['good'] = fuzz.trimf(quality.universe, [0, 50, 100])
-        quality['excellent'] = fuzz.trimf(quality.universe, [50, 100, 100])
-
-        # Create control system simulation
-        pH_sim = ctrl.ControlSystemSimulation(self.pH_ctrl)
-        pH_sim.input['pH_input'] = pH_value
-
-        # Compute the result
-        pH_sim.compute()
-        quality_value = pH_sim.output['pH_quality']
-
-        return quality_value
-    
-    def _calculate_fuzzy_quality_do(self, do_value):
-        """
-        Calculates the quality rating for Dissolved Oxygen using fuzzy logic.
-        """
-        # Define fuzzy sets and membership functions for Dissolved Oxygen
-        do = ctrl.Antecedent(np.arange(0, 20, 0.1), 'do_input')
-        quality = ctrl.Consequent(np.arange(0, 100, 1), 'do_quality')
-
-        # Define membership functions
-        do['poor'] = fuzz.trapmf(do.universe, [0, 0, 3, 7])
-        do['good'] = fuzz.gaussmf(do.universe, 9, 1)
-        do['excellent'] = fuzz.trapmf(do.universe, [11, 14, 20, 20])
-
-        quality['poor'] = fuzz.trimf(quality.universe, [0, 0, 50])
-        quality['good'] = fuzz.trimf(quality.universe, [0, 50, 100])
-        quality['excellent'] = fuzz.trimf(quality.universe, [50, 100, 100])
-
-        # Create control system simulation
-        do_sim = ctrl.ControlSystemSimulation(self.do_ctrl)
-        do_sim.input['do_input'] = do_value
-
-        # Compute the result
-        do_sim.compute()
-        quality_value = do_sim.output['do_quality']
-
-        return quality_value
+        return max(0, min(qi, 100))
 
     def _calculate_quality_rating_temperature(self, value):
-        """Calculates the quality rating for temperature."""
-        rating = self.quality_ratings["Temperature"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0  # Value is outside the defined poor range
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Temperature", value)
 
     def _calculate_quality_rating_turbidity(self, value):
-        """Calculates the quality rating for turbidity."""
-        rating = self.quality_ratings["Turbidity"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Turbidity", value)
 
     def _calculate_quality_rating_conductivity(self, value):
-        """Calculates the quality rating for conductivity."""
-        rating = self.quality_ratings["Conductivity"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Conductivity", value)
 
     def _calculate_quality_rating_tds(self, value):
-        """Calculates the quality rating for Total Dissolved Solids."""
-        rating = self.quality_ratings["Total Dissolved Solids"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Total Dissolved Solids", value)
 
     def _calculate_quality_rating_nitrate(self, value):
-        """Calculates the quality rating for nitrate."""
-        rating = self.quality_ratings["Nitrate"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Nitrate", value)
 
     def _calculate_quality_rating_phosphate(self, value):
-        """Calculates the quality rating for phosphate."""
-        rating = self.quality_ratings["Phosphate"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Phosphate", value)
 
     def _calculate_quality_rating_total_coliforms(self, value):
-        """Calculates the quality rating for Total Coliforms."""
-        rating = self.quality_ratings["Total Coliforms"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Total Coliforms", value)
 
     def _calculate_quality_rating_e_coli(self, value):
-        """Calculates the quality rating for E. coli."""
-        rating = self.quality_ratings["E. coli"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                if ideal == good_low:  # Avoid division by zero
-                    qi = 100 if value == ideal else 50 #Here if the value is ideal you get 100 else 50
-                else:
-                    qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("E. coli", value)
 
     def _calculate_quality_rating_bod(self, value):
-        """Calculates the quality rating for BOD."""
-        rating = self.quality_ratings["BOD"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("BOD", value)
 
     def _calculate_quality_rating_cod(self, value):
-        """Calculates the quality rating for COD."""
-        rating = self.quality_ratings["COD"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
+        return self.calculate_quality_rating("COD", value)
 
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
     def _calculate_quality_rating_hardness(self, value):
-        """Calculates the quality rating for hardness."""
-        rating = self.quality_ratings["Hardness"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Hardness", value)
 
     def _calculate_quality_rating_alkalinity(self, value):
-        """Calculates the quality rating for alkalinity."""
-        rating = self.quality_ratings["Alkalinity"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Alkalinity", value)
 
     def _calculate_quality_rating_iron(self, value):
-        """Calculates the quality rating for iron."""
-        rating = self.quality_ratings["Iron"]
-        ideal, good_low, good_high, poor_low, poor_high = (
-            rating["ideal"], rating["good_low"], rating["good_high"],
-            rating["poor_low"], rating["poor_high"]
-        )
-
-        if not (poor_low <= value <= poor_high):
-            return 0
-
-        if good_low <= value <= good_high:
-            # Within good range
-            if value <= ideal:
-                qi = 100 - ((ideal - value) / (ideal - good_low)) * 50  # 100 to 50 for good_low to ideal
-            else:
-                qi = 100 - ((value - ideal) / (good_high - ideal)) * 50  # 100 to 50 for ideal to good_high
-        elif value < good_low:
-            # Below good range
-            qi = 50 - ((good_low - value) / (good_low - poor_low)) * 50  # 50 to 0 for poor_low to good_low
-        else:
-            # Above good range
-            qi = 50 - ((value - good_high) / (poor_high - good_high)) * 50  # 50 to 0 for good_high to poor_high
-
-        return max(0, min(qi, 100))
+        return self.calculate_quality_rating("Iron", value)
 
     def calculate_overall_quality(self, data):
         """
@@ -681,10 +250,7 @@ class WaterQualityEvaluator:
             if parameter not in self.weights:
                 print(f"Warning: Unknown parameter '{parameter}' found in data. Skipping.")
                 continue
-            if parameter == "Alkalinity" or parameter == "Hardness" or parameter == "Iron":
-                qi = self.calculate_quality_rating(parameter, value)
-            else:
-                qi = self.calculate_quality_rating(parameter, value)
+            qi = self.calculate_quality_rating(parameter, value)
             quality_sum += qi * self.weights[parameter]
 
         return quality_sum
@@ -721,131 +287,125 @@ class WaterQualityEvaluator:
 
             # Parameter-specific interpretation
             if parameter == "pH":
-                if qi >= 90:
-                    param_comment = "pH is in the ideal range, indicating balanced acidity/alkalinity."
-                elif qi >= 70:
-                    param_comment = "pH is within acceptable limits, but may slightly deviate from the ideal."
-                else:
-                    param_comment = "pH is outside the optimal range, which could affect aquatic life and water usability."
-         
+                if value < 6.5:
+                    param_comment = "pH is acidic, which can be corrosive and may affect aquatic life."
+                elif 6.5 <= value <= 8.5:
+                    param_comment = "pH is within the optimal range, suitable for most aquatic life and uses."
+                elif value > 8.5:
+                    param_comment = "pH is alkaline, which can be unpleasant to taste and may affect aquatic life."
+
             elif parameter == "Dissolved Oxygen":
-                if qi >= 90:
-                    param_comment = "High dissolved oxygen levels, indicating a healthy aquatic ecosystem."
-                elif qi >= 70:
-                    param_comment = "Dissolved oxygen levels are adequate but could be improved."
-                else:
-                    param_comment = "Low dissolved oxygen levels, which could be detrimental to aquatic life."
-        
+                if value < 5:
+                    param_comment = "Dissolved oxygen levels are low, potentially stressing aquatic life."
+                elif 5 <= value <= 7:
+                    param_comment = "Dissolved oxygen levels are moderate, sufficient for some aquatic life but could be better."
+                elif value > 7:
+                    param_comment = "Dissolved oxygen levels are good, supporting a healthy aquatic ecosystem."
+
             elif parameter == "Temperature":
-                if qi >= 90:
-                    param_comment = "Temperature is within the optimal range for most aquatic organisms."
-                elif qi >= 70:
-                    param_comment = "Temperature is slightly outside the ideal range but may not pose significant issues."
-                else:
-                    param_comment = "Temperature is in a range that could stress aquatic life or affect water chemistry."
-          
+                if value < 15:
+                    param_comment = "Temperature is low, which can slow down biological processes."
+                elif 15 <= value <= 25:
+                    param_comment = "Temperature is optimal for most aquatic organisms."
+                elif value > 25:
+                    param_comment = "Temperature is high, which can reduce dissolved oxygen levels and stress aquatic life."
+
             elif parameter == "Turbidity":
-                if qi >= 90:
-                    param_comment = "Low turbidity, indicating clear water with minimal suspended particles."
-                elif qi >= 70:
-                    param_comment = "Water has moderate turbidity, which may impact light penetration and aquatic life."
-                else:
-                    param_comment = "High turbidity, indicating poor water clarity and potential issues with sedimentation and pollutants."
-          
+                if value <= 5:
+                    param_comment = "Turbidity is low, indicating clear water."
+                elif 5 < value <= 50:
+                    param_comment = "Turbidity is moderate, which may impact light penetration."
+                elif value > 50:
+                    param_comment = "Turbidity is high, indicating cloudy water with suspended particles."
+
             elif parameter == "Conductivity":
-                if qi >= 90:
-                    param_comment = "Conductivity is within the normal range for freshwater systems."
-                elif qi >= 70:
-                    param_comment = "Conductivity is slightly elevated, suggesting a moderate presence of dissolved solids."
-                else:
-                    param_comment = "High conductivity, indicating a significant presence of dissolved ions, which could affect water usability and aquatic ecosystems."
-           
+                if value <= 500:
+                    param_comment = "Conductivity is within a normal range for freshwater."
+                elif 500 < value <= 1500:
+                    param_comment = "Conductivity is elevated, suggesting a higher concentration of dissolved substances."
+                elif value > 1500:
+                    param_comment = "Conductivity is very high, which can be detrimental to aquatic life and indicates significant dissolved solids."
+
             elif parameter == "Total Dissolved Solids":
-                if qi >= 90:
-                    param_comment = "Low levels of total dissolved solids, indicating good water quality."
-                elif qi >= 70:
-                    param_comment = "Moderate levels of total dissolved solids, which may be acceptable for some uses but could impact taste."
-                else:
-              
-                    param_comment = "High levels of total dissolved solids, which could make the water unsuitable for drinking and some industrial uses."
+                if value <= 500:
+                    param_comment = "TDS levels are acceptable for drinking water."
+                elif 500 < value <= 1000:
+                    param_comment = "TDS levels are moderately high and may affect taste."
+                elif value > 1000:
+                    param_comment = "TDS levels are high, potentially making the water unpalatable or unsuitable for certain uses."
+
             elif parameter == "Nitrate":
-                if qi >= 90:
-                    param_comment = "Nitrate levels are within safe limits, posing minimal risk of eutrophication."
-                elif qi >= 70:
-                    param_comment = "Nitrate levels are slightly elevated but may not pose immediate concerns."
-                else:
-              
-                    param_comment = "High nitrate levels, which could contribute to eutrophication and pose health risks if consumed."
+                if value <= 5:
+                    param_comment = "Nitrate levels are within acceptable limits."
+                elif 5 < value <= 10:
+                    param_comment = "Nitrate levels are elevated and could contribute to eutrophication."
+                elif value > 10:
+                    param_comment = "Nitrate levels are high, posing a risk of eutrophication and potential health concerns."
+
             elif parameter == "Phosphate":
-                if qi >= 90:
-                    param_comment = "Phosphate levels are within acceptable limits, posing minimal risk of eutrophication."
-                elif qi >= 70:
-                    param_comment = "Phosphate levels are slightly elevated but may not pose immediate concerns."
-                else:
-             
-                    param_comment = "High phosphate levels, which could contribute to eutrophication and algal blooms."
+                if value <= 0.1:
+                    param_comment = "Phosphate levels are within acceptable limits."
+                elif 0.1 < value <= 0.5:
+                    param_comment = "Phosphate levels are elevated and could contribute to algal blooms."
+                elif value > 0.5:
+                    param_comment = "Phosphate levels are high, significantly increasing the risk of algal blooms."
+
             elif parameter == "Total Coliforms":
-                if qi >= 90:
-                    param_comment = "Total coliform levels are low or absent, indicating a low risk of fecal contamination."
-                elif qi >= 70:
-                    param_comment = "Moderate levels of total coliforms detected, suggesting potential contamination issues."
-                else:
-             
-                    param_comment = "High levels of total coliforms, indicating significant fecal contamination and health risks."
+                if value == 0:
+                    param_comment = "Total coliforms are not detected, indicating good sanitary quality."
+                elif 0 < value <= 10:
+                    param_comment = "Low levels of total coliforms detected, suggesting a potential for contamination."
+                elif value > 10:
+                    param_comment = "High levels of total coliforms, indicating likely fecal contamination."
+
             elif parameter == "E. coli":
-                if qi >= 90:
-                    param_comment = "E. coli is absent or present at very low levels, indicating a low risk of harmful pathogens."
-                elif qi >= 70:
-                    param_comment = "Low levels of E. coli detected, suggesting possible contamination."
-                else:
-             
-                    param_comment = "High levels of E. coli, indicating significant fecal contamination and a high risk of waterborne illness."
+                if value == 0:
+                    param_comment = "E. coli is not detected, indicating the water is likely safe from fecal contamination."
+                elif value > 0:
+                    param_comment = "E. coli is detected, indicating fecal contamination and a risk of waterborne illness."
+
             elif parameter == "BOD":
-                if qi >= 90:
-                    param_comment = "Low BOD, indicating minimal organic pollution and good oxygen availability for aquatic life."
-                elif qi >= 70:
-                    param_comment = "Moderate BOD, suggesting some organic pollution that could impact dissolved oxygen levels."
-                else:
-            
-                    param_comment = "High BOD, indicating significant organic pollution and potential depletion of dissolved oxygen."
+                if value <= 3:
+                    param_comment = "BOD is low, indicating good water quality with minimal organic pollution."
+                elif 3 < value <= 8:
+                    param_comment = "BOD is moderate, suggesting some organic pollution."
+                elif value > 8:
+                    param_comment = "BOD is high, indicating significant organic pollution that can deplete oxygen."
+
             elif parameter == "COD":
-                if qi >= 90:
-                    param_comment = "Low COD, indicating minimal chemical pollution and good water quality."
-                elif qi >= 70:
-                    param_comment = "Moderate COD, suggesting some chemical pollution that could impact water quality."
-                else:
-                    param_comment = "High COD, indicating significant chemical pollution and potential toxicity issues."
-          
+                if value <= 5:
+                    param_comment = "COD is low, indicating minimal chemical pollutants."
+                elif 5 < value <= 20:
+                    param_comment = "COD is moderate, suggesting some chemical pollution."
+                elif value > 20:
+                    param_comment = "COD is high, indicating significant chemical pollution."
+
             elif parameter == "Hardness":
-                if qi >= 90:
-                    param_comment = "Soft water, which is excellent for most uses but may lack essential minerals."
-                elif qi >= 70:
-                    param_comment = "Slightly hard water, which is generally acceptable but may start to exhibit some scaling in appliances."
-                elif qi >= 50:
-                    param_comment = "Moderately hard water. While not typically a health concern, it may cause scaling in pipes and appliances and reduce the effectiveness of soaps and detergents."
-                else:
-                    param_comment = "Hard to very hard water. Expect significant scaling, reduced soap effectiveness, and potential aesthetic issues."
+                if value <= 75:
+                    param_comment = "Water is soft."
+                elif 75 < value <= 150:
+                    param_comment = "Water is moderately hard."
+                elif 150 < value <= 300:
+                    param_comment = "Water is hard."
+                elif value > 300:
+                    param_comment = "Water is very hard."
 
             elif parameter == "Alkalinity":
-                if qi >= 90:
-                    param_comment = "High alkalinity, indicating a strong ability to resist pH changes. May be associated with hard water."
-                elif qi >= 70:
-                    param_comment = "Alkalinity is within the acceptable range. It indicates a good buffering capacity, meaning the water can resist significant changes in pH."
-                elif qi >= 50:
-                    param_comment = "Slightly low alkalinity. The water may be more susceptible to pH fluctuations."
-                else:
-                    param_comment = "Low alkalinity, indicating limited buffering capacity. The water's pH could be unstable and potentially corrosive."
-           
+                if value < 20:
+                    param_comment = "Alkalinity is low, making the water susceptible to pH changes."
+                elif 20 <= value <= 200:
+                    param_comment = "Alkalinity is within a desirable range, providing good buffering capacity."
+                elif value > 200:
+                    param_comment = "Alkalinity is high, which may be associated with high pH."
+
             elif parameter == "Iron":
-                if qi >= 90:
-                    param_comment = "Very low iron levels, unlikely to cause any aesthetic issues."
-                elif qi >= 70:
-                    param_comment = "Low iron levels, minimal risk of staining or metallic taste."
-                elif qi >= 50:
-                    param_comment = "Moderate iron levels. Some staining of fixtures or laundry may occur."
-                else:
-                    param_comment = "Elevated iron levels. This may cause staining of laundry and plumbing fixtures (e.g., reddish-brown stains) and impart a metallic taste to the water. It is not typically a health concern at these levels, but aesthetic issues are common."
-            
+                if value <= 0.3:
+                    param_comment = "Iron levels are low, unlikely to cause staining or taste issues."
+                elif 0.3 < value <= 1.0:
+                    param_comment = "Iron levels are moderate and may cause staining."
+                elif value > 1.0:
+                    param_comment = "Iron levels are high, likely causing staining and a metallic taste."
+
             else:
                 param_comment = "No specific comment available for this parameter."
 

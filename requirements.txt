@@ -1,8 +1,5 @@
 fastapi
 uvicorn
 matplotlib
-networkx
 numpy
-scipy
-scikit-fuzzy
 pydantic<2
