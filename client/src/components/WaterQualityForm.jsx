@@ -43,21 +43,21 @@ const WaterQualityForm = ({ onResult }) => {
     };
 
     const parameters = [
-        { name: 'Temperature', label: 'Temperature (°C)', type: 'text' }, 
-        { name: 'pH', label: 'pH', type: 'text' }, 
-        { name: 'Turbidity', label: 'Turbidity (NTU)', type: 'text' }, 
-        { name: 'DissolvedOxygen', label: 'Dissolved Oxygen (mg/L)', type: 'text' }, // Changed // Changed to 'text'to 'text'// Changed to 'text'
-        { name: 'Conductivity', label: 'Conductivity (µS/cm)', type: 'text' }, // Changed to 'text'
-        { name: 'TotalDissolvedSolids', label: 'Total Dissolved Solids (mg/L)', type: 'text' }, // Changed to 'text'
-        { name: 'Nitrate', label: 'Nitrate (mg/L)', type: 'text' }, // Changed to 'text'
-        { name: 'Phosphate', label: 'Phosphate (mg/L)', type: 'text' }, // Changed to 'text'
-        { name: 'TotalColiforms', label: 'Total Coliforms (CFU/100mL)', type: 'text' }, // Changed to 'text'
-        { name: 'Ecoli', label: 'E. coli (CFU/100mL)', type: 'text' }, // Changed to 'text'
-        { name: 'BOD', label: 'BOD (mg/L)', type: 'text' },
-        { name: 'COD', label: 'COD (mg/L)', type: 'text' }, // Changed to 'text'
-        { name: 'Hardness', label: 'Hardness (mg/L as CaCO3)', type: 'text' }, // Changed to 'text'
-        { name: 'Alkalinity', label: 'Alkalinity (mg/L as CaCO3)', type: 'text' }, // Changed to 'text'
-        { name: 'Iron', label: 'Iron (mg/L)', type: 'text' }, // Changed to 'text'
+        { name: 'Temperature', label: 'Temperature (°C)' },
+        { name: 'pH', label: 'pH' },
+        { name: 'Turbidity', label: 'Turbidity (NTU)' },
+        { name: 'DissolvedOxygen', label: 'Dissolved Oxygen (mg/L)' },
+        { name: 'Conductivity', label: 'Conductivity (µS/cm)' },
+        { name: 'TotalDissolvedSolids', label: 'Total Dissolved Solids (mg/L)' },
+        { name: 'Nitrate', label: 'Nitrate (mg/L)' },
+        { name: 'Phosphate', label: 'Phosphate (mg/L)' },
+        { name: 'TotalColiforms', label: 'Total Coliforms (CFU/100mL)' },
+        { name: 'Ecoli', label: 'E. coli (CFU/100mL)' },
+        { name: 'BOD', label: 'BOD (mg/L)' },
+        { name: 'COD', label: 'COD (mg/L)' },
+        { name: 'Hardness', label: 'Hardness (mg/L as CaCO3)' },
+        { name: 'Alkalinity', label: 'Alkalinity (mg/L as CaCO3)' },
+        { name: 'Iron', label: 'Iron (mg/L)' },
     ];
 
     return (
@@ -73,8 +73,9 @@ const WaterQualityForm = ({ onResult }) => {
                                 fullWidth
                                 label={param.label}
                                 name={param.name}
-                                type={param.type}
-                                value={formData[param.name] === 0 ? '0' : formData[param.name] || ''}
+                                type="number"
+                                step="any"
+                                value={formData[param.name]}
                                 onChange={handleChange}
                                 variant="outlined"
                             />
