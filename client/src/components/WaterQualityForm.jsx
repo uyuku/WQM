@@ -43,21 +43,21 @@ const WaterQualityForm = ({ onResult }) => {
     };
 
     const parameters = [
-        { name: 'Temperature', label: 'Temperature (°C)', type: 'number' },
-        { name: 'pH', label: 'pH', type: 'number' },
-        { name: 'Turbidity', label: 'Turbidity (NTU)', type: 'number' },
-        { name: 'DissolvedOxygen', label: 'Dissolved Oxygen (mg/L)', type: 'number' },
-        { name: 'Conductivity', label: 'Conductivity (µS/cm)', type: 'number' },
-        { name: 'TotalDissolvedSolids', label: 'Total Dissolved Solids (mg/L)', type: 'number' },
-        { name: 'Nitrate', label: 'Nitrate (mg/L)', type: 'number' },
-        { name: 'Phosphate', label: 'Phosphate (mg/L)', type: 'number' },
-        { name: 'TotalColiforms', label: 'Total Coliforms (CFU/100mL)', type: 'number' },
-        { name: 'Ecoli', label: 'E. coli (CFU/100mL)', type: 'number' },
-        { name: 'BOD', label: 'BOD (mg/L)', type: 'number' },
-        { name: 'COD', label: 'COD (mg/L)', type: 'number' },
-        { name: 'Hardness', label: 'Hardness (mg/L as CaCO3)', type: 'number' },
-        { name: 'Alkalinity', label: 'Alkalinity (mg/L as CaCO3)', type: 'number' },
-        { name: 'Iron', label: 'Iron (mg/L)', type: 'number' },
+        { name: 'Temperature', label: 'Temperature (°C)', type: 'text' }, 
+        { name: 'pH', label: 'pH', type: 'text' }, 
+        { name: 'Turbidity', label: 'Turbidity (NTU)', type: 'text' }, 
+        { name: 'DissolvedOxygen', label: 'Dissolved Oxygen (mg/L)', type: 'text' }, // Changed // Changed to 'text'to 'text'// Changed to 'text'
+        { name: 'Conductivity', label: 'Conductivity (µS/cm)', type: 'text' }, // Changed to 'text'
+        { name: 'TotalDissolvedSolids', label: 'Total Dissolved Solids (mg/L)', type: 'text' }, // Changed to 'text'
+        { name: 'Nitrate', label: 'Nitrate (mg/L)', type: 'text' }, // Changed to 'text'
+        { name: 'Phosphate', label: 'Phosphate (mg/L)', type: 'text' }, // Changed to 'text'
+        { name: 'TotalColiforms', label: 'Total Coliforms (CFU/100mL)', type: 'text' }, // Changed to 'text'
+        { name: 'Ecoli', label: 'E. coli (CFU/100mL)', type: 'text' }, // Changed to 'text'
+        { name: 'BOD', label: 'BOD (mg/L)', type: 'text' },
+        { name: 'COD', label: 'COD (mg/L)', type: 'text' }, // Changed to 'text'
+        { name: 'Hardness', label: 'Hardness (mg/L as CaCO3)', type: 'text' }, // Changed to 'text'
+        { name: 'Alkalinity', label: 'Alkalinity (mg/L as CaCO3)', type: 'text' }, // Changed to 'text'
+        { name: 'Iron', label: 'Iron (mg/L)', type: 'text' }, // Changed to 'text'
     ];
 
     return (
