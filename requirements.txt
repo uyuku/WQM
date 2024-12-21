@@ -1,5 +1,4 @@
 fastapi
 uvicorn
 matplotlib
-numpy
 pydantic<2
