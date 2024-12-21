@@ -35,23 +35,22 @@ class WaterQualityEvaluator:
 
         # Adjusted quality ratings for better logic
         self.default_quality_ratings = {
-            "Temperature": {"ideal": 20, "good_low": 15, "good_high": 25, "poor_low": 0, "poor_high": 40, "unit": "°C"},
-            "pH": {"ideal": 7, "good_low": 6.5, "good_high": 8.5, "poor_low": 0, "poor_high": 14, "unit": ""},
-            "Turbidity": {"ideal": 0, "good_low": 0, "good_high": 5, "poor_low": 0, "poor_high": 8, "unit": "NTU"},
-            "Dissolved Oxygen": {"ideal": 9, "good_low": 7, "good_high": 11, "poor_low": 0, "poor_high": 15, "unit": "mg/L"},
-            "Conductivity": {"ideal": 0, "good_low": 0, "good_high": 500, "poor_low": 0, "poor_high": 2000, "unit": "µS/cm"},
-            "Total Dissolved Solids": {"ideal": 0, "good_low": 0, "good_high": 500, "poor_low": 0, "poor_high": 1500, "unit": "mg/L"},
-            "Nitrate": {"ideal": 0, "good_low": 0, "good_high": 5, "poor_low": 0, "poor_high": 20, "unit": "mg/L"},
-            "Phosphate": {"ideal": 0, "good_low": 0, "good_high": 0.1, "poor_low": 0, "poor_high": 1.0, "unit": "mg/L"},
-            "Total Coliforms": {"ideal": 0, "good_low": 0, "good_high": 10, "poor_low": 0, "poor_high": 1000, "unit": "CFU/100mL"},
-            "E. coli": {"ideal": 0, "good_low": 0, "good_high": 1, "poor_low": 0, "poor_high": 100, "unit": "CFU/100mL"},
-            "BOD": {"ideal": 0, "good_low": 0, "good_high": 3, "poor_low": 0, "poor_high": 20, "unit": "mg/L"},
-            "COD": {"ideal": 0, "good_low": 0, "good_high": 5, "poor_low": 0, "poor_high": 50, "unit": "mg/L"},
-            "Hardness": {"ideal": 75, "good_low": 60, "good_high": 180, "poor_low": 0, "poor_high": 800, "unit": "mg/L"},
-            "Alkalinity": {"ideal": 100, "good_low": 20, "good_high": 200, "poor_low": 0, "poor_high": 1000, "unit": "mg/L"},
-            "Iron": {"ideal": 0, "good_low": 0, "good_high": 0.3, "poor_low": 0, "poor_high": 5.0, "unit": "mg/L"}
+            "Temperature": {"ideal": 20, "good_low": 15, "good_high": 20, "poor_low": 20, "poor_high": 25, "unit": "°C"},
+            "pH": {"ideal": 7.0, "good_low": 6.5, "good_high": 8.5, "poor_low": 8.5, "poor_high": 9.0, "unit": ""},
+            "Turbidity": {"ideal": 0, "good_low": 0, "good_high": 1, "poor_low": 1, "poor_high": 5, "unit": "NTU"},
+            "Dissolved Oxygen": {"ideal": 8, "good_low": 6, "good_high": 12, "poor_low": 5, "poor_high": 6, "unit": "mg/L"},
+            "Conductivity": {"ideal": 200, "good_low": 50, "good_high": 1000, "poor_low": 1000, "poor_high": 2500, "unit": "µS/cm"},
+            "Total Dissolved Solids": {"ideal": 250, "good_low": 30, "good_high": 500, "poor_low": 500, "poor_high": 1000, "unit": "mg/L"},
+            "Nitrate": {"ideal": 2, "good_low": 0, "good_high": 5, "poor_low": 5, "poor_high": 10, "unit": "mg/L"},
+            "Phosphate": {"ideal": 0.05, "good_low": 0, "good_high": 0.1, "poor_low": 0.1, "poor_high": 0.5, "unit": "mg/L"},
+            "Total Coliforms": {"ideal": 0, "good_low": 0, "good_high": 0, "poor_low": 0, "poor_high": 10, "unit": "CFU/100mL"},
+            "E. coli": {"ideal": 0, "good_low": 0, "good_high": 0, "poor_low": 0, "poor_high": 1, "unit": "CFU/100mL"},
+            "BOD": {"ideal": 1, "good_low": 0, "good_high": 2, "poor_low": 2, "poor_high": 5, "unit": "mg/L"},
+            "COD": {"ideal": 10, "good_low": 0, "good_high": 20, "poor_low": 20, "poor_high": 50, "unit": "mg/L"},
+            "Hardness": {"ideal": 150, "good_low": 60, "good_high": 300, "poor_low": 300, "poor_high": 500, "unit": "mg/L"},
+            "Alkalinity": {"ideal": 100, "good_low": 20, "good_high": 200, "poor_low": 200, "poor_high": 300, "unit": "mg/L"},
+            "Iron": {"ideal": 0.1, "good_low": 0, "good_high": 0.3, "poor_low": 0.3, "poor_high": 0.5, "unit": "mg/L"},
         }
-
         self.weights = weights if weights is not None else self.default_weights
         self.quality_ratings = quality_ratings if quality_ratings is not None else self.default_quality_ratings
 
